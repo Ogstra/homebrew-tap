@@ -1,0 +1,38 @@
+name: brew audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  audit:
+    name: brew style and audit
+    runs-on: macos-26
+    permissions:
+      contents: read
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Audit the Proxor cask
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew --version
+          tap_dir="$(brew --repository ogstra/tap)"
+          if [ ! -f "$tap_dir/Casks/proxor.rb" ]; then
+            echo "Casks/proxor.rb is written by the first Proxor release that carries a macOS zip; nothing to audit yet."
+            exit 0
+          fi
+          brew trust --tap ogstra/tap
+          brew style --cask ogstra/tap/proxor
+          # --online checks the release asset, LSMinimumSystemVersion and the prerelease
+          # allowlist. Never --new or --signing: they run the Gatekeeper audit, which an
+          # ad-hoc signed app cannot pass.
+          brew audit --cask --online --strict ogstra/tap/proxor
