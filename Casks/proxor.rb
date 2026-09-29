@@ -1,6 +1,6 @@
 cask "proxor" do
-  version "1.6.10"
-  sha256 "f0f99e93686b736f362ccb180f4dbb24c02259f2bdcbcb35b8f53e79080afc63"
+  version "1.6.11"
+  sha256 "591faf03706ee82df73cefe3f6752dbf3894d7bd85222ba5eba256514ada5713"
 
   url "https://github.com/Ogstra/proxor/releases/download/v#{version}/proxor-#{version}-macos-arm64.zip"
   name "Proxor"
