@@ -1,6 +1,6 @@
 cask "proxor" do
-  version "1.6.11"
-  sha256 "591faf03706ee82df73cefe3f6752dbf3894d7bd85222ba5eba256514ada5713"
+  version "1.6.12"
+  sha256 "d1d5cb131a4511e42f6c636df955f3c793777886027535c2a136bc0879368a79"
 
   url "https://github.com/Ogstra/proxor/releases/download/v#{version}/proxor-#{version}-macos-arm64.zip"
   name "Proxor"
@@ -33,10 +33,22 @@ cask "proxor" do
     run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/Proxor.app"]
   end
 
-  uninstall quit: "io.github.Ogstra.Proxor"
+  # The Tun/System Proxy service installed from the app (Settings > Tun) lives outside the app bundle.
+  # Owner decision: plain `brew uninstall` removes it too. Homebrew also runs this on `brew upgrade`,
+  # so upgrading removes the service (the app offers to reinstall it) and asks for the admin password.
+  uninstall launchctl: "io.github.Ogstra.Proxor.helper",
+            quit:      "io.github.Ogstra.Proxor",
+            delete:    [
+              "/Library/Application Support/Proxor",
+              "/Library/LaunchDaemons/io.github.Ogstra.Proxor.helper.plist",
+              "/Library/PrivilegedHelperTools/io.github.Ogstra.Proxor.helper",
+            ]
 
-  zap trash: [
-    "~/Library/Preferences/io.github.Ogstra.Proxor.plist",
-    "~/Library/Preferences/proxor",
-  ]
+  # The Start-with-system agent stays across brew upgrade (uninstall runs on upgrade); only --zap removes it.
+  zap delete: "/var/log/proxor-helper.log",
+      trash:  [
+        "~/Library/LaunchAgents/io.github.Ogstra.Proxor.autostart.plist",
+        "~/Library/Preferences/io.github.Ogstra.Proxor.plist",
+        "~/Library/Preferences/proxor",
+      ]
 end
