@@ -1,8 +1,19 @@
 cask "proxor" do
-  version "1.6.12"
-  sha256 "d1d5cb131a4511e42f6c636df955f3c793777886027535c2a136bc0879368a79"
+  arch arm: "arm64", intel: "x86_64"
 
-  url "https://github.com/Ogstra/proxor/releases/download/v#{version}/proxor-#{version}-macos-arm64.zip"
+  version "1.6.14"
+  sha256 arm:   "fd280c17f859ad34d42a0823b00aeca0a33cde7b308c4678bf10ea6f8bb380f7",
+         intel: "5477191509f0ac1c00a1d4352e7a0d38bce6a3574d994e95926480102d47edfe"
+
+  # Apple Silicon needs macOS 15 (Homebrew Qt); Intel needs macOS 12 (official Qt).
+  on_arm do
+    depends_on macos: :sequoia
+  end
+  on_intel do
+    depends_on macos: :monterey
+  end
+
+  url "https://github.com/Ogstra/proxor/releases/download/v#{version}/proxor-#{version}-macos-#{arch}.zip"
   name "Proxor"
   desc "Proxy client with a Qt GUI, built on the sing-box core"
   homepage "https://github.com/Ogstra/proxor"
@@ -22,8 +33,6 @@ cask "proxor" do
   end
 
   auto_updates false
-  depends_on arch: :arm64
-  depends_on macos: :sequoia
 
   app "Proxor.app"
 
