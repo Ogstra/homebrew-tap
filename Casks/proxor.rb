@@ -1,9 +1,9 @@
 cask "proxor" do
   arch arm: "arm64", intel: "x86_64"
 
-  version "1.6.15"
-  sha256 arm:   "370b9ca634d4feaa8172d9d91d64e484286fc2450b580c25eeb95b2449d26a29",
-         intel: "3015981d590d20be2a00efb64c82e92024c7964adac0ab250b466a32db514c2d"
+  version "1.6.16"
+  sha256 arm:   "4bc9a85eddd4ca0125ee610c1c02ff9dc618a5996a9e888efdc99a6a771a9d7c",
+         intel: "4a6d2431754f82b7d9b86cb350249e897b2a070cb77315f19b538f51e5a5cc4f"
 
   # Apple Silicon needs macOS 15 (Homebrew Qt); Intel needs macOS 12 (official Qt).
   on_arm do
