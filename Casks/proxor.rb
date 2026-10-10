@@ -2,8 +2,8 @@ cask "proxor" do
   arch arm: "arm64", intel: "x86_64"
 
   version "1.6.17"
-  sha256 arm:   "0749e69658311abd16c7ed81194bd096346cfd95ba94629a7b3fb995ba66e1dd",
-         intel: "ea211f35c6513407d98fec2dd42ffd6c4871ba438472c2b88b8e56fa3a827f5f"
+  sha256 arm:   "1ab5985794f977a16b3a5c58126ffb3b1fd135fef5582a33b6bb3ee2af70626c",
+         intel: "0648241adb13cc342a83460211147b38efa09299d862aaffb92adb25a1c933ae"
 
   # Apple Silicon needs macOS 15 (Homebrew Qt); Intel needs macOS 12 (official Qt).
   on_arm do
@@ -43,19 +43,18 @@ cask "proxor" do
   end
 
   # The Tun/System Proxy service installed from the app (Settings > Tun) lives outside the app bundle.
-  # Owner decision: plain `brew uninstall` removes it too. Homebrew also runs this on `brew upgrade`,
-  # so upgrading removes the service (the app offers to reinstall it) and asks for the admin password.
-  uninstall launchctl: "io.github.Ogstra.Proxor.helper",
-            quit:      "io.github.Ogstra.Proxor",
-            delete:    [
-              "/Library/Application Support/Proxor",
-              "/Library/LaunchDaemons/io.github.Ogstra.Proxor.helper.plist",
-              "/Library/PrivilegedHelperTools/io.github.Ogstra.Proxor.helper",
-            ]
+  # It stays across `brew upgrade` and `brew uninstall` (Homebrew runs the uninstall block on upgrade, so the
+  # service is not removed there); `brew uninstall --zap` or Settings > Tun > Remove takes it out.
+  uninstall quit: "io.github.Ogstra.Proxor"
 
-  # The Start-with-system agent stays across brew upgrade (uninstall runs on upgrade); only --zap removes it.
-  zap delete: "/var/log/proxor-helper.log",
-      trash:  [
+  zap launchctl: "io.github.Ogstra.Proxor.helper",
+      delete:    [
+        "/Library/Application Support/Proxor",
+        "/Library/LaunchDaemons/io.github.Ogstra.Proxor.helper.plist",
+        "/Library/PrivilegedHelperTools/io.github.Ogstra.Proxor.helper",
+        "/var/log/proxor-helper.log",
+      ],
+      trash:     [
         "~/Library/LaunchAgents/io.github.Ogstra.Proxor.autostart.plist",
         "~/Library/Preferences/io.github.Ogstra.Proxor.plist",
         "~/Library/Preferences/proxor",
